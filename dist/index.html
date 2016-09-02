@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Mobile Console</title>
+    <meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <link rel="stylesheet" href="a.css">
+    <style>
+    </style>
+</head>
+<body>
+    <div class="console">
+        <ol>
+            <li class='input'>
+                <input type="text">
+            </li>
+        </ol>
+    </div>
+
+    <script>
+        var out = document.querySelector('.console');
+        var list = out.querySelector("ol");
+        var inputbox = list.querySelector('input');
+        var hist = [];
+
+        function addLine(str, className) {
+            if (str === '') return;
+
+            var currentLine = inputbox.parentNode;
+            var newLine = document.createElement('li');
+            newLine.className = className;
+            list.insertBefore(newLine, currentLine);
+            newLine.innerHTML = str;
+        }
+
+        function handleInput(input) {
+            var v = input.value;
+            if (v === '') { return false; }
+
+            var value = input.value;
+            addLine(value, 'in');
+            hist.push(value);
+            input.value = "";
+
+            addLine( exec(value), 'out' );
+            return true;
+        }
+
+        function exec(str) {
+            try {
+                var result = window.eval(str);
+            } catch(e) {
+                return e;
+            }
+            return result;
+        }
+
+        var keyCodes = {
+            Enter: 13,
+            ArrowLeft: 37,
+            ArrowUp: 38,
+            ArrowRight: 39,
+            ArrowDown: 40
+        };
+
+        var histKey = hist.length;
+        list.addEventListener('keyup', function(e){
+            switch (+e.keyCode) {
+                case keyCodes.Enter: // Enter
+                    handleInput(inputbox);
+                    histKey = hist.length;
+                    break;
+                case keyCodes.ArrowUp: // ArrowUp
+                case keyCodes.ArrowDown:
+                case keyCodes.ArrowLeft:
+                case keyCodes.ArrowRight:
+                    var v = histKey[--histKey];
+                    if (v) { inputbox.value = v; }
+                    break;
+                default:
+                    // console.log(e.key);
+                    // jh = e;
+            }
+        }, false);
+    </script>
+</body>
+</html>
